@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { User, Mail, Calendar, CheckCircle, ArrowLeft } from "lucide-react";
+import styles from './Register.module.css';
 
 export default function Register() {
   const { eventName } = useParams();
@@ -24,109 +25,107 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 mb-8 transition-colors duration-300 group"
+          className={styles.backButton}
         >
-          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
-          <span className="font-medium">Back</span>
+          <ArrowLeft className="h-5 w-5" />
+          <span>Back</span>
         </button>
 
-        <div className="card p-8 animate-fade-in">
+        <div className={styles.card}>
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl mb-4 animate-bounce-gentle">
+          <div className={styles.header}>
+            <div className={styles.headerIcon}>
               <Calendar className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold gradient-text mb-2">Event Registration</h1>
-            <p className="text-gray-600">Join us for an amazing experience!</p>
+            <h1 className={`${styles.headerTitle} gradient-text`}>Event Registration</h1>
+            <p className={styles.headerDescription}>Join us for an amazing experience!</p>
           </div>
 
           {/* Event Info */}
-          <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Registering for:</h2>
-            <p className="text-2xl font-bold gradient-text">{eventName}</p>
+          <div className={styles.eventInfo}>
+            <h2 className={styles.eventInfoTitle}>Registering for:</h2>
+            <p className={`${styles.eventInfoName} gradient-text`}>{eventName}</p>
           </div>
 
           {/* Registration Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="animate-slide-up">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
                 Full Name *
               </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className={styles.inputContainer}>
+                <User className={`h-5 w-5 ${styles.inputIcon}`} />
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="input-field pl-12"
+                  className={styles.input}
                   placeholder="Enter your full name"
                 />
               </div>
             </div>
 
-            <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className={styles.formGroup} style={{ animationDelay: '0.1s' }}>
+              <label className={styles.label}>
                 Email / Roll Number *
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className={styles.inputContainer}>
+                <Mail className={`h-5 w-5 ${styles.inputIcon}`} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input-field pl-12"
+                  className={styles.input}
                   placeholder="Enter your email or roll number"
                 />
               </div>
             </div>
 
-            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className={styles.formGroup} style={{ animationDelay: '0.2s' }}>
+              <label className={styles.label}>
                 Event Name
               </label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className={styles.inputContainer}>
+                <Calendar className={`h-5 w-5 ${styles.inputIcon}`} />
                 <input
                   type="text"
                   value={eventName}
                   readOnly
-                  className="input-field pl-12 bg-gray-50 cursor-not-allowed"
+                  className={`${styles.input} ${styles.inputReadonly}`}
                 />
               </div>
             </div>
 
             {/* Terms and Conditions */}
-            <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-              <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-xl">
-                <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-semibold mb-1">Registration Terms</p>
+            <div className={styles.termsNotice} style={{ animationDelay: '0.3s' }}>
+              <CheckCircle className={`h-5 w-5 ${styles.termsIcon}`} />
+              <div className={styles.termsContent}>
+                <p className={styles.termsTitle}>Registration Terms</p>
                   <p>By registering, you agree to attend the event and follow all campus guidelines. Cancellation must be done 24 hours before the event.</p>
-                </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <div className={styles.formGroup} style={{ animationDelay: '0.4s' }}>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                className={`${styles.submitButton} ${
                   isSubmitting
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "btn-primary"
+                    ? styles.submitButtonDisabled
+                    : styles.submitButtonNormal
                 }`}
               >
                 {isSubmitting ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className={styles.submitButtonContent}>
+                    <div className={styles.spinner}></div>
                     <span>Registering...</span>
                   </div>
                 ) : (
@@ -137,7 +136,7 @@ export default function Register() {
           </form>
 
           {/* Help Text */}
-          <div className="mt-8 text-center text-sm text-gray-500 animate-fade-in">
+          <div className={styles.helpText}>
             <p>Need help? Contact the event organizers or visit the help desk.</p>
           </div>
         </div>

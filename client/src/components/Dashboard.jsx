@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Calendar, User, Mail, Trash2, CheckCircle, Clock, MapPin } from "lucide-react";
+import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const [registrations, setRegistrations] = useState([]);
@@ -42,79 +43,79 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
         {/* Success Message */}
         {showSuccess && (
-          <div className="mb-8 animate-slide-up">
-            <div className="bg-success-50 border border-success-200 rounded-xl p-4 flex items-center space-x-3">
-              <CheckCircle className="h-6 w-6 text-success-600" />
+          <div className={styles.successMessage}>
+            <div className={styles.successCard}>
+              <CheckCircle className="h-6 w-6" style={{ color: 'var(--success-600)' }} />
               <div>
-                <p className="font-semibold text-success-800">Registration Successful!</p>
-                <p className="text-success-700">You've been registered for {location.state?.eventName}</p>
+                <p className={styles.successTitle}>Registration Successful!</p>
+                <p className={styles.successText}>You've been registered for {location.state?.eventName}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl mb-4 animate-bounce-gentle">
+        <div className={styles.header}>
+          <div className={styles.headerIcon}>
             <User className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">Your Dashboard</h1>
-          <p className="text-xl text-gray-600">Manage your event registrations and stay updated</p>
+          <h1 className={`${styles.headerTitle} gradient-text`}>Your Dashboard</h1>
+          <p className={styles.headerDescription}>Manage your event registrations and stay updated</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="card p-6 text-center animate-slide-up">
-            <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Calendar className="h-6 w-6 text-primary-600" />
+        <div className={`${styles.statsGrid} mdGridCols3`}>
+          <div className={styles.statCard}>
+            <div className={`${styles.statIcon} ${styles.statIconPrimary}`}>
+              <Calendar className="h-6 w-6" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800">{registrations.length}</h3>
-            <p className="text-gray-600">Total Registrations</p>
+            <h3 className={styles.statNumber}>{registrations.length}</h3>
+            <p className={styles.statLabel}>Total Registrations</p>
           </div>
           
-          <div className="card p-6 text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="h-6 w-6 text-secondary-600" />
+          <div className={styles.statCard} style={{ animationDelay: '0.1s' }}>
+            <div className={`${styles.statIcon} ${styles.statIconSecondary}`}>
+              <Clock className="h-6 w-6" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800">
+            <h3 className={styles.statNumber}>
               {registrations.filter(r => getEventStatus(r.event).status === 'upcoming').length}
             </h3>
-            <p className="text-gray-600">Upcoming Events</p>
+            <p className={styles.statLabel}>Upcoming Events</p>
           </div>
           
-          <div className="card p-6 text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="h-6 w-6 text-success-600" />
+          <div className={styles.statCard} style={{ animationDelay: '0.2s' }}>
+            <div className={`${styles.statIcon} ${styles.statIconSuccess}`}>
+              <CheckCircle className="h-6 w-6" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800">
+            <h3 className={styles.statNumber}>
               {registrations.filter(r => getEventStatus(r.event).status === 'completed').length}
             </h3>
-            <p className="text-gray-600">Completed Events</p>
+            <p className={styles.statLabel}>Completed Events</p>
           </div>
         </div>
 
         {/* Registrations List */}
-        <div className="card p-8 animate-slide-up">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">My Registered Events</h2>
+        <div className={styles.registrationsCard}>
+          <h2 className={styles.registrationsTitle}>My Registered Events</h2>
           
           {registrations.length === 0 ? (
-            <div className="text-center py-12">
-              <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Events Registered</h3>
-              <p className="text-gray-500 mb-6">You haven't registered for any events yet.</p>
+            <div className={styles.emptyState}>
+              <Calendar className={`h-16 w-16 ${styles.emptyIcon}`} />
+              <h3 className={styles.emptyTitle}>No Events Registered</h3>
+              <p className={styles.emptyText}>You haven't registered for any events yet.</p>
               <button
                 onClick={() => window.location.href = '/'}
-                className="btn-primary"
+                className={styles.emptyButton}
               >
                 Browse Events
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className={styles.registrationsList}>
               {registrations.map((registration, index) => {
                 const eventStatus = getEventStatus(registration.event);
                 const StatusIcon = eventStatus.icon;
@@ -122,43 +123,43 @@ export default function Dashboard() {
                 return (
                   <div
                     key={index}
-                    className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-300 animate-slide-up"
+                    className={styles.registrationItem}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-800">{registration.event}</h3>
-                        <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${eventStatus.color}`}>
+                    <div className={styles.registrationHeader}>
+                      <div className={styles.registrationTitleRow}>
+                        <h3 className={styles.registrationTitle}>{registration.event}</h3>
+                        <span className={`${styles.statusBadge} ${styles[`status${eventStatus.status.charAt(0).toUpperCase() + eventStatus.status.slice(1)}`]}`}>
                           <StatusIcon className="h-4 w-4" />
-                          <span className="capitalize">{eventStatus.status}</span>
+                          <span>{eventStatus.status.charAt(0).toUpperCase() + eventStatus.status.slice(1)}</span>
                         </span>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <User className="h-4 w-4 text-primary-600" />
+                      <div className={`${styles.registrationDetails} mdGridCols2`}>
+                        <div className={styles.registrationDetail}>
+                          <User className={`h-4 w-4 ${styles.registrationDetailIcon}`} />
                           <span><strong>Name:</strong> {registration.name}</span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Mail className="h-4 w-4 text-secondary-600" />
+                        <div className={styles.registrationDetail}>
+                          <Mail className={`h-4 w-4 ${styles.registrationDetailIconSecondary}`} />
                           <span><strong>Email:</strong> {registration.email}</span>
                         </div>
                         {registration.date && (
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="h-4 w-4 text-accent-600" />
+                          <div className={styles.registrationDetail}>
+                            <Calendar className={`h-4 w-4 ${styles.registrationDetailIconAccent}`} />
                             <span><strong>Registered:</strong> {new Date(registration.date).toLocaleDateString()}</span>
                           </div>
                         )}
                       </div>
                     </div>
                     
-                    <div className="mt-4 md:mt-0 md:ml-6">
+                    <div className={styles.registrationActions}>
                       <button
                         onClick={() => handleRemoveRegistration(index)}
-                        className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-300 group"
+                        className={styles.cancelButton}
                       >
-                        <Trash2 className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                        <span className="font-medium">Cancel</span>
+                        <Trash2 className="h-4 w-4" />
+                        <span>Cancel</span>
                       </button>
                     </div>
                   </div>

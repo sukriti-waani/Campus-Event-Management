@@ -1,0 +1,328 @@
+.container {
+  min-height: 100vh;
+  padding-top: var(--spacing-20);
+  padding-bottom: var(--spacing-12);
+}
+
+.wrapper {
+  max-width: 1536px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+}
+
+.successMessage {
+  margin-bottom: var(--spacing-8);
+  animation: slideUp 0.6s ease-out;
+}
+
+.successCard {
+  background: var(--success-50);
+  border: 1px solid var(--success-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.successTitle {
+  font-weight: 600;
+  color: var(--success-800);
+}
+
+.successText {
+  color: var(--success-700);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+  border-radius: var(--radius-2xl);
+  margin-bottom: var(--spacing-4);
+  animation: bounceGentle 2s infinite;
+}
+
+.headerTitle {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-4);
+}
+
+.headerDescription {
+  font-size: var(--font-size-xl);
+  color: var(--gray-600);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-12);
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-6);
+  text-align: center;
+  animation: slideUp 0.6s ease-out;
+}
+
+.statIcon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-4);
+}
+
+.statIconPrimary {
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+.statIconSecondary {
+  background: var(--secondary-100);
+  color: var(--secondary-600);
+}
+
+.statIconSuccess {
+  background: var(--success-100);
+  color: var(--success-600);
+}
+
+.statNumber {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.statLabel {
+  color: var(--gray-600);
+}
+
+.registrationsCard {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-8);
+  animation: slideUp 0.6s ease-out;
+}
+
+.registrationsTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: var(--spacing-6);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-12) 0;
+}
+
+.emptyIcon {
+  margin: 0 auto var(--spacing-4);
+  color: var(--gray-300);
+}
+
+.emptyTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-2);
+}
+
+.emptyText {
+  color: var(--gray-500);
+  margin-bottom: var(--spacing-6);
+}
+
+.emptyButton {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  color: white;
+  font-weight: 600;
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--radius-xl);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.emptyButton:hover {
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+}
+
+.registrationsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.registrationItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-6);
+  background: var(--gray-50);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-normal);
+  animation: slideUp 0.6s ease-out;
+}
+
+.registrationItem:hover {
+  background: var(--gray-100);
+}
+
+.registrationHeader {
+  flex: 1;
+}
+
+.registrationTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
+}
+
+.registrationTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.statusUpcoming {
+  color: var(--primary-600);
+  background: var(--primary-100);
+}
+
+.statusCompleted {
+  color: var(--success-600);
+  background: var(--success-100);
+}
+
+.registrationDetails {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+}
+
+.registrationDetail {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.registrationDetailIcon {
+  color: var(--primary-600);
+}
+
+.registrationDetailIconSecondary {
+  color: var(--secondary-600);
+}
+
+.registrationDetailIconAccent {
+  color: var(--accent-600);
+}
+
+.registrationActions {
+  margin-top: var(--spacing-4);
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  color: var(--error-600);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-weight: 500;
+}
+
+.cancelButton:hover {
+  color: var(--error-700);
+  background: var(--error-50);
+}
+
+.cancelButton:hover svg {
+  transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .registrationItem {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .registrationDetails {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .registrationActions {
+    margin-top: 0;
+    margin-left: var(--spacing-6);
+  }
+  
+  .headerTitle {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+@media (min-width: 640px) {
+  .wrapper {
+    padding: 0 var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wrapper {
+    padding: 0 var(--spacing-8);
+  }
+}

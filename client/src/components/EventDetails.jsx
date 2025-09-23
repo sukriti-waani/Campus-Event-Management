@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, Clock, MapPin, User, Users, ArrowLeft, Star, Share2 } from "lucide-react";
+import styles from './EventDetails.module.css';
 
 const events = [
   {
@@ -65,11 +66,11 @@ export default function EventDetails() {
 
   if (!event) {
     return (
-      <div className="min-h-screen pt-20 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Event Not Found</h1>
-          <p className="text-gray-600 mb-8">The event you're looking for doesn't exist.</p>
-          <button onClick={() => navigate('/')} className="btn-primary">
+      <div className={styles.notFound}>
+        <div className={styles.notFoundContent}>
+          <h1 className={styles.notFoundTitle}>Event Not Found</h1>
+          <p className={styles.notFoundText}>The event you're looking for doesn't exist.</p>
+          <button onClick={() => navigate('/')} className={styles.notFoundButton}>
             Back to Events
           </button>
         </div>
@@ -80,39 +81,39 @@ export default function EventDetails() {
   const attendancePercentage = (event.attendees / event.maxAttendees) * 100;
 
   return (
-    <div className="min-h-screen pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 mb-8 transition-colors duration-300 group"
+          className={styles.backButton}
         >
-          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+          <ArrowLeft className="h-5 w-5" />
           <span className="font-medium">Back to Events</span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className={`${styles.mainGrid} lgGridCols3`}>
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div className={styles.mainContent} style={{ gridColumn: 'span 2' }}>
             {/* Hero Image */}
-            <div className="relative h-96 rounded-2xl overflow-hidden mb-8 animate-fade-in">
+            <div className={styles.heroImage}>
               <img
                 src={event.image}
                 alt={event.title}
-                className="w-full h-full object-cover"
+                className={styles.heroImageImg}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className={`absolute top-6 left-6 px-4 py-2 rounded-full text-white font-semibold bg-gradient-to-r ${categoryColors[event.category]}`}>
+              <div className={styles.heroImageOverlay} />
+              <div className={`${styles.heroCategory} ${styles[`category${event.category}`]}`}>
                 {event.category}
               </div>
-              <div className="absolute bottom-6 left-6 text-white">
-                <h1 className="text-4xl md:text-5xl font-bold mb-2">{event.title}</h1>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span className="font-semibold">{event.rating}</span>
+              <div className={styles.heroContent}>
+                <h1 className={styles.heroTitle}>{event.title}</h1>
+                <div className={styles.heroMeta}>
+                  <div className={styles.heroMetaItem}>
+                    <Star className={`h-5 w-5 ${styles.heroRating}`} style={{ fill: 'currentColor' }} />
+                    <span>{event.rating}</span>
                   </div>
-                  <div className="flex items-center space-x-1">
+                  <div className={styles.heroMetaItem}>
                     <Users className="h-5 w-5" />
                     <span>{event.attendees} attending</span>
                   </div>
@@ -121,17 +122,17 @@ export default function EventDetails() {
             </div>
 
             {/* Event Description */}
-            <div className="card p-8 mb-8 animate-slide-up">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">About This Event</h2>
-              <p className="text-gray-600 text-lg leading-relaxed mb-6">{event.desc}</p>
+            <div className={styles.descriptionCard}>
+              <h2 className={styles.descriptionTitle}>About This Event</h2>
+              <p className={styles.descriptionText}>{event.desc}</p>
               
               {/* Highlights */}
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Event Highlights</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <h3 className={styles.highlightsTitle}>Event Highlights</h3>
+              <div className={styles.highlightsGrid}>
                 {event.highlights.map((highlight, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-primary-50 rounded-xl">
-                    <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
-                    <span className="text-gray-700 font-medium">{highlight}</span>
+                  <div key={index} className={styles.highlightItem}>
+                    <div className={styles.highlightDot}></div>
+                    <span className={styles.highlightText}>{highlight}</span>
                   </div>
                 ))}
               </div>
@@ -139,91 +140,91 @@ export default function EventDetails() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className={styles.sidebar}>
             {/* Event Info Card */}
-            <div className="card p-6 animate-slide-up">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">Event Details</h3>
+            <div className={styles.sidebarCard}>
+              <h3 className={styles.sidebarTitle}>Event Details</h3>
               
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-primary-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-primary-600" />
+              <div className={styles.detailsList}>
+                <div className={styles.detailItem}>
+                  <div className={`${styles.detailIcon} ${styles.detailIconPrimary}`}>
+                    <Calendar className="h-5 w-5" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Date</p>
-                    <p className="font-semibold text-gray-800">{event.date}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-secondary-100 rounded-lg">
-                    <Clock className="h-5 w-5 text-secondary-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Time</p>
-                    <p className="font-semibold text-gray-800">{event.time}</p>
+                  <div className={styles.detailContent}>
+                    <p className={styles.detailLabel}>Date</p>
+                    <p className={styles.detailValue}>{event.date}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-accent-100 rounded-lg">
-                    <MapPin className="h-5 w-5 text-accent-600" />
+                <div className={styles.detailItem}>
+                  <div className={`${styles.detailIcon} ${styles.detailIconSecondary}`}>
+                    <Clock className="h-5 w-5" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Venue</p>
-                    <p className="font-semibold text-gray-800">{event.location}</p>
+                  <div className={styles.detailContent}>
+                    <p className={styles.detailLabel}>Time</p>
+                    <p className={styles.detailValue}>{event.time}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-success-100 rounded-lg">
-                    <User className="h-5 w-5 text-success-600" />
+                <div className={styles.detailItem}>
+                  <div className={`${styles.detailIcon} ${styles.detailIconAccent}`}>
+                    <MapPin className="h-5 w-5" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Organizer</p>
-                    <p className="font-semibold text-gray-800">{event.organizer}</p>
+                  <div className={styles.detailContent}>
+                    <p className={styles.detailLabel}>Venue</p>
+                    <p className={styles.detailValue}>{event.location}</p>
+                  </div>
+                </div>
+
+                <div className={styles.detailItem}>
+                  <div className={`${styles.detailIcon} ${styles.detailIconSuccess}`}>
+                    <User className="h-5 w-5" />
+                  </div>
+                  <div className={styles.detailContent}>
+                    <p className={styles.detailLabel}>Organizer</p>
+                    <p className={styles.detailValue}>{event.organizer}</p>
                   </div>
                 </div>
               </div>
 
               {/* Registration Deadline */}
-              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                <p className="text-sm text-yellow-800">
+              <div className={styles.deadlineNotice}>
+                <p className={styles.deadlineText}>
                   <strong>Registration Deadline:</strong> {event.deadline}
                 </p>
               </div>
             </div>
 
             {/* Attendance Card */}
-            <div className="card p-6 animate-slide-up">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Attendance</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Registered</span>
-                  <span className="font-semibold">{event.attendees}/{event.maxAttendees}</span>
+            <div className={styles.sidebarCard}>
+              <h3 className={styles.attendanceTitle}>Attendance</h3>
+              <div className={styles.attendanceStats}>
+                <div className={styles.attendanceNumbers}>
+                  <span className={styles.attendanceLabel}>Registered</span>
+                  <span className={styles.attendanceValue}>{event.attendees}/{event.maxAttendees}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className={styles.progressBar}>
                   <div
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full transition-all duration-500"
+                    className={styles.progressFill}
                     style={{ width: `${attendancePercentage}%` }}
                   ></div>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className={styles.attendancePercentage}>
                   {Math.round(attendancePercentage)}% capacity filled
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-4 animate-slide-up">
-              <button
+            <div className={styles.actionButtons}>
+              <a
                 onClick={() => navigate(`/register/${event.title}`)}
-                className="w-full btn-primary text-lg py-4"
+                className={styles.registerButton}
               >
                 Register Now
-              </button>
+              </a>
               
-              <button className="w-full btn-outline flex items-center justify-center space-x-2">
+              <button className={styles.shareButton}>
                 <Share2 className="h-5 w-5" />
                 <span>Share Event</span>
               </button>

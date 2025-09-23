@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
+import styles from './EventList.module.css';
 
 const events = [
   { 
@@ -41,71 +42,71 @@ export default function EventList() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
         {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary-100 to-secondary-100 px-6 py-3 rounded-full mb-6">
+        <div className={styles.hero}>
+          <div className={styles.heroBadge}>
             <Sparkles className="h-5 w-5 text-primary-600" />
-            <span className="text-primary-700 font-semibold">Discover Amazing Events</span>
+            <span className={styles.heroBadgeText}>Discover Amazing Events</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold gradient-text mb-6 animate-slide-up">
+          <h1 className={`${styles.heroTitle} gradient-text`}>
             Campus Events
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed animate-slide-up">
+          <p className={styles.heroDescription}>
             Join exciting events, connect with peers, and create unforgettable memories. 
             Your campus adventure starts here!
           </p>
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className={`${styles.eventsGrid} mdGridCols2 lgGridCols3`}>
           {events.map((event, index) => (
             <div
               key={event.id}
-              className="card p-0 overflow-hidden group cursor-pointer animate-slide-up"
+              className={styles.eventCard}
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => navigate(`/event/${event.id}`)}
             >
               {/* Event Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className={styles.eventImageContainer}>
                 <img
                   src={event.image}
                   alt={event.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className={styles.eventImage}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-white text-sm font-semibold bg-gradient-to-r ${categoryColors[event.category]}`}>
+                <div className={styles.eventImageOverlay} />
+                <div className={`${styles.eventCategory} ${styles[`category${event.category}`]}`}>
                   {event.category}
                 </div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold mb-1">{event.title}</h3>
+                <div className={styles.eventTitle}>
+                  <h3>{event.title}</h3>
                 </div>
               </div>
 
               {/* Event Details */}
-              <div className="p-6">
-                <div className="flex items-center space-x-4 text-gray-600 mb-4">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-primary-600" />
-                    <span className="text-sm font-medium">{event.date}</span>
+              <div className={styles.eventContent}>
+                <div className={styles.eventMeta}>
+                  <div className={styles.eventMetaItem}>
+                    <Calendar className="h-4 w-4" style={{ color: 'var(--primary-600)' }} />
+                    <span>{event.date}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-secondary-600" />
-                    <span className="text-sm font-medium">{event.location}</span>
+                  <div className={styles.eventMetaItem}>
+                    <MapPin className="h-4 w-4" style={{ color: 'var(--secondary-600)' }} />
+                    <span>{event.location}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Users className="h-4 w-4 text-accent-600" />
-                    <span className="text-sm font-medium">{event.attendees} attending</span>
+                <div className={styles.eventFooter}>
+                  <div className={styles.eventAttendees}>
+                    <Users className="h-4 w-4" style={{ color: 'var(--accent-600)' }} />
+                    <span>{event.attendees} attending</span>
                   </div>
                   
-                  <button className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-semibold group-hover:translate-x-1 transition-transform duration-300">
+                  <div className={styles.eventViewDetails}>
                     <span>View Details</span>
                     <ArrowRight className="h-4 w-4" />
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -113,23 +114,23 @@ export default function EventList() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-20 text-center">
-          <div className="card p-12 max-w-4xl mx-auto">
-            <div className="animate-float">
-              <Calendar className="h-16 w-16 text-primary-600 mx-auto mb-6" />
+        <div className={styles.cta}>
+          <div className={styles.ctaCard}>
+            <div className={styles.ctaIcon}>
+              <Calendar className="h-16 w-16" />
             </div>
-            <h2 className="text-3xl font-bold gradient-text mb-4">
+            <h2 className={`${styles.ctaTitle} gradient-text`}>
               Ready to Join the Fun?
             </h2>
-            <p className="text-gray-600 mb-8 text-lg">
+            <p className={styles.ctaDescription}>
               Don't miss out on amazing campus events. Register now and be part of something special!
             </p>
-            <button
+            <a
               onClick={() => navigate('/dashboard')}
-              className="btn-primary text-lg px-8 py-4"
+              className={styles.ctaButton}
             >
               View My Dashboard
-            </button>
+            </a>
           </div>
         </div>
       </div>
