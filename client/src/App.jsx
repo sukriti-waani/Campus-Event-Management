@@ -6,6 +6,7 @@ import EventList from "./components/EventList.jsx";
 import Feedback from "./components/Feedback.jsx";
 import Login from "./components/Login.jsx";
 import Navbar from "./components/Navbar.jsx";
+import OrganizerDashboard from "./components/OrganizerDashboard.jsx";
 import Register from "./components/Register.jsx";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
         </Routes>
       </div>
     </BrowserRouter>
