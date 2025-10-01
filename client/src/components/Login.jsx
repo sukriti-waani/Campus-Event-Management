@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { LogIn, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -8,28 +10,52 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userType, setUserType] = useState("student"); // student or organizer
+  const [errors, setErrors] = useState({});
+  const [userType, setUserType] = useState("student");
   const navigate = useNavigate();
+  const { signIn } = useAuth();
+  const { showToast } = useToast();
 
-  function handleSubmit(e) {
+  const validateForm = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  async function handleSubmit(e) {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    // Simulate API call
+    setErrors({});
+
     setTimeout(() => {
+      localStorage.setItem("userType", userType);
+      localStorage.setItem("userEmail", email);
+
+      showToast(`Welcome back! Logged in as ${userType}`, 'success');
+
       if (userType === "organizer") {
-        // Store organizer login state
-        localStorage.setItem("userType", "organizer");
         navigate("/organizer-dashboard");
       } else {
-        // Store student login state
-        localStorage.setItem("userType", "student");
         navigate("/dashboard");
       }
+
       setIsSubmitting(false);
-      setEmail("");
-      setPassword("");
-    }, 1500);
+    }, 1000);
   }
 
   return (
@@ -69,44 +95,67 @@ export default function Login() {
           {/* Login Form */}
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
-              <label className={styles.label}>
+              <label htmlFor="email" className={styles.label}>
                 Email / Roll Number *
               </label>
               <div className={styles.inputContainer}>
-                <Mail className={`h-5 w-5 ${styles.inputIcon}`} />
+                <Mail className={`h-5 w-5 ${styles.inputIcon}`} aria-hidden="true" />
                 <input
+                  id="email"
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={styles.input}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: '' });
+                  }}
+                  className={`${styles.input} ${errors.email ? 'border-red-500' : ''}`}
                   placeholder="Enter your email or roll number"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
                 />
               </div>
+              {errors.email && (
+                <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup} style={{ animationDelay: '0.1s' }}>
-              <label className={styles.label}>
+              <label htmlFor="password" className={styles.label}>
                 Password *
               </label>
               <div className={styles.inputContainer}>
-                <Lock className={`h-5 w-5 ${styles.inputIcon}`} />
+                <Lock className={`h-5 w-5 ${styles.inputIcon}`} aria-hidden="true" />
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`${styles.input} ${styles.inputWithButton}`}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors({ ...errors, password: '' });
+                  }}
+                  className={`${styles.input} ${styles.inputWithButton} ${errors.password ? 'border-red-500' : ''}`}
                   placeholder="Enter your password"
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? 'password-error' : undefined}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className={styles.toggleButton}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
                 </button>
               </div>
+              {errors.password && (
+                <p id="password-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.password}
+                </p>
+              )}
             </div>
 
             {/* Remember Me & Forgot Password */}

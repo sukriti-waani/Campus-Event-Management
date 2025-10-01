@@ -22,6 +22,12 @@ body {
   min-height: 100vh;
   color: var(--gray-800);
   line-height: var(--line-height-normal);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #f1f1f1;
 }
 
 /* Global Animations */
