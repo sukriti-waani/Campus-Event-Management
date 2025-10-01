@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
+import { CircleCheck as CheckCircle, CircleAlert as AlertCircle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext({});
 

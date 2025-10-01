@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Calendar, Home, BarChart3, MessageSquare, LogIn, Moon, Sun, LogOut } from "lucide-react";
+import { Menu, X, Calendar, Hop as Home, ChartBar as BarChart3, MessageSquare, LogIn, Moon, Sun, LogOut } from "lucide-react";
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './Navbar.module.css';
