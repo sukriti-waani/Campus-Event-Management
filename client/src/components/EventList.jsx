@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, MapPin, Users, ArrowRight, Sparkles, Filter } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowRight, Sparkles, ListFilter as Filter } from "lucide-react";
 import { SearchBar } from './ui';
 import { EventCardSkeleton } from './ui/Skeleton';
 import styles from './EventList.module.css';
