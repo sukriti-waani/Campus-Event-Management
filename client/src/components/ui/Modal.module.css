@@ -1,0 +1,74 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  opacity: 0;
+  animation: fadeIn 0.2s forwards; /* Use global fadeIn animation */
+}
+
+.modal {
+  background-color: var(--color-card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-md);
+  padding: var(--spacing-lg);
+  max-width: 90%;
+  max-height: 90vh; /* Max viewport height */
+  overflow-y: auto; /* Allow scrolling for long content */
+  position: relative;
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: slideInFromTop 0.3s ease-out 0.1s forwards; /* Use global slide-in */
+  min-width: 300px; /* Ensure a minimum width */
+}
+
+body.dark .modal {
+  background-color: var(--color-dark-card-background);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+body.dark .modalHeader {
+  border-bottom-color: var(--color-dark-border);
+}
+
+.modalTitle {
+  font-size: var(--font-size-h4);
+  margin: 0; /* Override default heading margin */
+  color: var(--color-text);
+}
+
+body.dark .modalTitle {
+  color: var(--color-dark-text);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  color: var(--color-secondary);
+  transition: color var(--transition-speed);
+  padding: var(--spacing-xs); /* Make click area larger */
+}
+
+.closeButton:hover {
+  color: var(--color-danger);
+}
+
+.modalContent {
+  /* Content specific styling can go here */
+}

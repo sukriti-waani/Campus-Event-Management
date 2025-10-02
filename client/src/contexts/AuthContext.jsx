@@ -1,96 +1,111 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null); // { id: '...', email: '...', role: 'student' | 'organizer' }
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate checking local storage or a token for a logged-in user
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (email, password) => {
+    // In a real app, you'd call your backend/Supabase here
+    // For now, mock a successful login based on simple credentials
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (email === "student@example.com" && password === "password") {
+          const loggedInUser = {
+            id: "student-123",
+            email: email,
+            role: "student",
+          };
+          setUser(loggedInUser);
+          localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+          resolve(loggedInUser);
+        } else if (
+          email === "organizer@example.com" &&
+          password === "password"
+        ) {
+          const loggedInUser = {
+            id: "organizer-456",
+            email: email,
+            role: "organizer",
+          };
+          setUser(loggedInUser);
+          localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+          resolve(loggedInUser);
+        } else {
+          reject(new Error("Invalid email or password."));
+        }
+      }, 1000);
+    });
+  };
+
+  const register = async (email, password, role) => {
+    // In a real app, you'd call your backend/Supabase here
+    // For now, just simulate success
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (email && password && role) {
+          // Check if user already exists (simple mock)
+          if (
+            email === "student@example.com" ||
+            email === "organizer@example.com"
+          ) {
+            reject(new Error("User with this email already exists."));
+            return;
+          }
+          const newUser = {
+            id: `user-${Date.now()}`,
+            email: email,
+            role: role,
+          };
+          // In a real app, you wouldn't log them in directly after register without verification
+          // For this mock, we'll auto-login
+          setUser(newUser);
+          localStorage.setItem("currentUser", JSON.stringify(newUser));
+          resolve(newUser);
+        } else {
+          reject(new Error("Please provide email, password, and role."));
+        }
+      }, 1000);
+    });
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("currentUser");
+  };
+
+  const isAuthenticated = !!user;
+  const isStudent = user?.role === "student";
+  const isOrganizer = user?.role === "organizer";
+
+  const value = {
+    user,
+    isAuthenticated,
+    isStudent,
+    isOrganizer,
+    login,
+    register,
+    logout,
+    loading,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const localUserType = localStorage.getItem('userType');
-      const localUserEmail = localStorage.getItem('userEmail');
-
-      if (localUserType && localUserEmail) {
-        setUser({ email: localUserEmail });
-        setProfile({ user_type: localUserType, email: localUserEmail });
-      }
-      setLoading(false);
-    };
-
-    getSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        (async () => {
-          if (session?.user) {
-            setUser(session.user);
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .maybeSingle();
-            setProfile(profileData);
-          } else {
-            setUser(null);
-            setProfile(null);
-          }
-          setLoading(false);
-        })();
-      }
-    );
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
-  }, []);
-
-  const signUp = async (email, password, userData) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData,
-      },
-    });
-    return { data, error };
-  };
-
-  const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
-  };
-
-  const signOut = async () => {
-    localStorage.removeItem('userType');
-    localStorage.removeItem('userEmail');
-    setUser(null);
-    setProfile(null);
-    const { error } = await supabase.auth.signOut();
-    return { error };
-  };
-
-  const value = {
-    user,
-    profile,
-    loading,
-    signUp,
-    signIn,
-    signOut,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

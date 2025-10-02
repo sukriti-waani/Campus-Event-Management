@@ -1,174 +1,150 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Calendar, User, Mail, Trash2, CheckCircle, Clock, MapPin } from "lucide-react";
-import styles from './Dashboard.module.css';
+import { useEffect, useState } from "react";
+import { FaCalendarCheck, FaRegCalendarAlt } from "react-icons/fa"; // react-icons
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import styles from "./Dashboard.module.css";
+import { Button, Card, Skeleton } from "./ui";
 
-export default function Dashboard() {
-  const [registrations, setRegistrations] = useState([]);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const location = useLocation();
+const mockRegisteredEvents = [
+  {
+    id: "e001",
+    title: "Annual Tech Conference",
+    date: "2024-05-15",
+    time: "09:00 AM",
+    location: "Campus Auditorium",
+    category: "Academic",
+    imageUrl:
+      "https://via.placeholder.com/300x200/007bff/ffffff?text=Tech+Conf",
+  },
+  {
+    id: "e003",
+    title: "Campus Charity Run",
+    date: "2024-06-01",
+    time: "08:00 AM",
+    location: "Campus Grounds",
+    category: "Sports",
+    imageUrl:
+      "https://via.placeholder.com/300x200/28a745/ffffff?text=Charity+Run",
+  },
+  {
+    id: "e005",
+    title: "Spring Art Exhibition",
+    date: "2024-06-10",
+    time: "02:00 PM",
+    location: "University Gallery",
+    category: "Arts & Culture",
+    imageUrl:
+      "https://via.placeholder.com/300x200/17a2b8/ffffff?text=Art+Exhibition",
+  },
+];
+
+const Dashboard = () => {
+  const { user } = useAuth();
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("registrations")) || [];
-    setRegistrations(stored);
-
-    // Show success message if coming from registration
-    if (location.state?.showSuccess) {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
-    }
-  }, [location]);
-
-  const handleRemoveRegistration = (index) => {
-    const updated = registrations.filter((_, i) => i !== index);
-    setRegistrations(updated);
-    localStorage.setItem("registrations", JSON.stringify(updated));
-  };
-
-  const getEventStatus = (eventName) => {
-    const eventDates = {
-      "TechFest 2025": "2025-10-05",
-      "Cultural Night": "2025-10-10",
-      "Sports Meet": "2025-10-15"
+    // Simulate fetching registered events from an API
+    const fetchRegisteredEvents = async () => {
+      setLoading(true);
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          setRegisteredEvents(mockRegisteredEvents);
+          setLoading(false);
+          resolve();
+        }, 1000); // Simulate network delay
+      });
     };
-    
-    const eventDate = new Date(eventDates[eventName]);
-    const today = new Date();
-    
-    if (eventDate > today) {
-      return { status: "upcoming", color: "text-blue-600 bg-blue-100", icon: Clock };
+
+    if (user && user.role === "student") {
+      fetchRegisteredEvents();
     } else {
-      return { status: "completed", color: "text-green-600 bg-green-100", icon: CheckCircle };
+      setLoading(false);
     }
-  };
+  }, [user]);
+
+  if (!user || user.role !== "student") {
+    // This case should be handled by ProtectedRoute, but good for defensive coding
+    return (
+      <div className="container">
+        <p>Access Denied: You must be a student to view this dashboard.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.wrapper}>
-        {/* Success Message */}
-        {showSuccess && (
-          <div className={styles.successMessage}>
-            <div className={styles.successCard}>
-              <CheckCircle className="h-6 w-6" style={{ color: 'var(--success-600)' }} />
-              <div>
-                <p className={styles.successTitle}>Registration Successful!</p>
-                <p className={styles.successText}>You've been registered for {location.state?.eventName}</p>
+    <div className={`${styles.dashboard} container`}>
+      <h1 className={styles.title}>
+        <FaCalendarCheck className={styles.icon} aria-hidden="true" /> My
+        Registered Events
+      </h1>
+
+      {loading ? (
+        <div className={styles.eventGrid}>
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className={styles.eventCard}>
+              <Skeleton height="150px" className={styles.skeletonImage} />
+              <div className={styles.cardContent}>
+                <Skeleton
+                  height="24px"
+                  width="70%"
+                  style={{ marginBottom: "8px" }}
+                />
+                <Skeleton
+                  height="18px"
+                  width="90%"
+                  style={{ marginBottom: "4px" }}
+                />
+                <Skeleton height="18px" width="80%" />
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.headerIcon}>
-            <User className="h-8 w-8 text-white" />
-          </div>
-          <h1 className={`${styles.headerTitle} gradient-text`}>Your Dashboard</h1>
-          <p className={styles.headerDescription}>Manage your event registrations and stay updated</p>
+            </Card>
+          ))}
         </div>
-
-        {/* Stats Cards */}
-        <div className={`${styles.statsGrid} mdGridCols3`}>
-          <div className={styles.statCard}>
-            <div className={`${styles.statIcon} ${styles.statIconPrimary}`}>
-              <Calendar className="h-6 w-6" />
-            </div>
-            <h3 className={styles.statNumber}>{registrations.length}</h3>
-            <p className={styles.statLabel}>Total Registrations</p>
-          </div>
-          
-          <div className={styles.statCard} style={{ animationDelay: '0.1s' }}>
-            <div className={`${styles.statIcon} ${styles.statIconSecondary}`}>
-              <Clock className="h-6 w-6" />
-            </div>
-            <h3 className={styles.statNumber}>
-              {registrations.filter(r => getEventStatus(r.event).status === 'upcoming').length}
-            </h3>
-            <p className={styles.statLabel}>Upcoming Events</p>
-          </div>
-          
-          <div className={styles.statCard} style={{ animationDelay: '0.2s' }}>
-            <div className={`${styles.statIcon} ${styles.statIconSuccess}`}>
-              <CheckCircle className="h-6 w-6" />
-            </div>
-            <h3 className={styles.statNumber}>
-              {registrations.filter(r => getEventStatus(r.event).status === 'completed').length}
-            </h3>
-            <p className={styles.statLabel}>Completed Events</p>
-          </div>
-        </div>
-
-        {/* Registrations List */}
-        <div className={styles.registrationsCard}>
-          <h2 className={styles.registrationsTitle}>My Registered Events</h2>
-          
-          {registrations.length === 0 ? (
-            <div className={styles.emptyState}>
-              <Calendar className={`h-16 w-16 ${styles.emptyIcon}`} />
-              <h3 className={styles.emptyTitle}>No Events Registered</h3>
-              <p className={styles.emptyText}>You haven't registered for any events yet.</p>
-              <button
-                onClick={() => window.location.href = '/'}
-                className={styles.emptyButton}
-              >
-                Browse Events
-              </button>
-            </div>
-          ) : (
-            <div className={styles.registrationsList}>
-              {registrations.map((registration, index) => {
-                const eventStatus = getEventStatus(registration.event);
-                const StatusIcon = eventStatus.icon;
-                
-                return (
-                  <div
-                    key={index}
-                    className={styles.registrationItem}
-                    style={{ animationDelay: `${index * 0.1}s` }}
+      ) : registeredEvents.length > 0 ? (
+        <div className={styles.eventGrid}>
+          {registeredEvents.map((event) => (
+            <Card key={event.id} className={styles.eventCard}>
+              <img
+                src={event.imageUrl}
+                alt={event.title}
+                className={styles.eventImage}
+                loading="lazy"
+              />
+              <div className={styles.cardContent}>
+                <h3 className={styles.eventName}>{event.title}</h3>
+                <p className={styles.eventInfo}>
+                  <FaRegCalendarAlt
+                    aria-hidden="true"
+                    className={styles.infoIcon}
+                  />
+                  <span>
+                    {new Date(event.date).toLocaleDateString()} at {event.time}
+                  </span>
+                </p>
+                <p className={styles.eventInfo}>
+                  <span className={styles.categoryTag}>{event.category}</span>
+                </p>
+                <Link to={`/events/${event.id}`}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className={styles.detailsButton}
                   >
-                    <div className={styles.registrationHeader}>
-                      <div className={styles.registrationTitleRow}>
-                        <h3 className={styles.registrationTitle}>{registration.event}</h3>
-                        <span className={`${styles.statusBadge} ${styles[`status${eventStatus.status.charAt(0).toUpperCase() + eventStatus.status.slice(1)}`]}`}>
-                          <StatusIcon className="h-4 w-4" />
-                          <span>{eventStatus.status.charAt(0).toUpperCase() + eventStatus.status.slice(1)}</span>
-                        </span>
-                      </div>
-                      
-                      <div className={`${styles.registrationDetails} mdGridCols2`}>
-                        <div className={styles.registrationDetail}>
-                          <User className={`h-4 w-4 ${styles.registrationDetailIcon}`} />
-                          <span><strong>Name:</strong> {registration.name}</span>
-                        </div>
-                        <div className={styles.registrationDetail}>
-                          <Mail className={`h-4 w-4 ${styles.registrationDetailIconSecondary}`} />
-                          <span><strong>Email:</strong> {registration.email}</span>
-                        </div>
-                        {registration.date && (
-                          <div className={styles.registrationDetail}>
-                            <Calendar className={`h-4 w-4 ${styles.registrationDetailIconAccent}`} />
-                            <span><strong>Registered:</strong> {new Date(registration.date).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className={styles.registrationActions}>
-                      <button
-                        onClick={() => handleRemoveRegistration(index)}
-                        className={styles.cancelButton}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span>Cancel</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                    View Details
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          ))}
         </div>
-      </div>
+      ) : (
+        <p className={styles.emptyMessage}>
+          You haven't registered for any events yet.{" "}
+          <Link to="/">Browse available events</Link>
+        </p>
+      )}
     </div>
   );
-}
+};
+
+export default Dashboard;

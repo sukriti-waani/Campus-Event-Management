@@ -1,0 +1,18 @@
+.skeleton {
+  background-color: var(--color-border);
+  border-radius: var(--border-radius-sm);
+  display: inline-block; /* Allows width/height to be set */
+  line-height: 1; /* Prevents line height issues */
+  width: 100%; /* Default to full width of parent */
+  height: 1em; /* Default to current font size height */
+}
+
+.skeletonPulse {
+  animation: pulse 1.5s infinite ease-in-out; /* Uses animation from global.css */
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+/* Dark mode adjustments applied via global.css @keyframes pulse */

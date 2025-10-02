@@ -1,0 +1,35 @@
+/* Default pulse animation */
+@keyframes pulse {
+  0% {
+    background-color: var(--color-border);
+  }
+  50% {
+    background-color: var(--color-light);
+  }
+  100% {
+    background-color: var(--color-border);
+  }
+}
+
+/* Dark mode pulse animation */
+@keyframes pulse-dark {
+  0% {
+    background-color: var(--color-dark-border);
+  }
+  50% {
+    background-color: var(--color-dark-background);
+  }
+  100% {
+    background-color: var(--color-dark-border);
+  }
+}
+
+/* Apply animations */
+.skeleton-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Dark mode version */
+body.dark .skeleton-pulse {
+  animation: pulse-dark 1.5s infinite ease-in-out;
+}

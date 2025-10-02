@@ -1,62 +1,92 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { ThemeProvider } from "./contexts/ThemeContext.jsx";
-import { ToastProvider } from "./contexts/ToastContext.jsx";
-import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
-import Navbar from "./components/Navbar.jsx";
+import { Suspense, lazy } from "react";
+import { FaSpinner } from "react-icons/fa"; // You'll need to install react-icons
+import { Route, Routes } from "react-router-dom";
+import styles from "./App.module.css";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./contexts/AuthContext"; // Import useAuth to check loading state
 
-const Dashboard = lazy(() => import("./components/Dashboard.jsx"));
-const EventDetails = lazy(() => import("./components/EventDetails.jsx"));
-const EventList = lazy(() => import("./components/EventList.jsx"));
-const Feedback = lazy(() => import("./components/Feedback.jsx"));
-const Login = lazy(() => import("./components/Login.jsx"));
-const OrganizerDashboard = lazy(() => import("./components/OrganizerDashboard.jsx"));
-const Register = lazy(() => import("./components/Register.jsx"));
-
-const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+// Lazy-loaded components
+const Login = lazy(() => import("./components/Login"));
+const Register = lazy(() => import("./components/Register"));
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const EventList = lazy(() => import("./components/EventList"));
+const EventDetails = lazy(() => import("./components/EventDetails"));
+const OrganizerDashboard = lazy(() =>
+  import("./components/OrganizerDashboard")
+);
+const Feedback = lazy(() => import("./components/Feedback"));
+const NotFound = () => (
+  <div className="container" style={{ padding: "2rem" }}>
+    <h2>404 - Page Not Found</h2>
+    <p>The page you are looking for does not exist.</p>
   </div>
 );
 
-export default function App() {
+function App() {
+  const { loading: authLoading } = useAuth(); // Use auth loading state
+
+  if (authLoading) {
+    // Show a global loading spinner while authentication state is being checked
+    return (
+      <div
+        className={styles.fullScreenLoader}
+        role="status"
+        aria-label="Loading application"
+      >
+        <FaSpinner className={styles.spinnerIcon} />
+        <p>Loading application...</p>
+      </div>
+    );
+  }
+
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-              <Navbar />
-              <Suspense fallback={<LoadingFallback />}>
-                <Routes>
-                  <Route path="/" element={<EventList />} />
-                  <Route path="/event/:id" element={<EventDetails />} />
-                  <Route path="/register/:eventName" element={<Register />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/feedback" element={<Feedback />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/organizer-dashboard"
-                    element={
-                      <ProtectedRoute requireOrganizer>
-                        <OrganizerDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </Suspense>
+    <div className={styles.app}>
+      <Navbar />
+      <main className={styles.mainContent}>
+        <Suspense
+          fallback={
+            <div className={styles.suspenseLoader}>
+              <FaSpinner className={styles.spinnerIcon} />
+              <p>Loading content...</p>
             </div>
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+          }
+        >
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<EventList />} /> {/* Home page */}
+            <Route path="/events/:id" element={<EventDetails />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["student", "organizer"]}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/organizer-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["organizer"]}>
+                  <OrganizerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <Feedback />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} /> {/* Catch-all for 404 */}
+          </Routes>
+        </Suspense>
+      </main>
+    </div>
   );
 }
+
+export default App;

@@ -1,6 +1,7 @@
-export { Button } from './Button';
-export { Input } from './Input';
-export { Card, CardHeader, CardBody, CardFooter } from './Card';
-export { SearchBar } from './SearchBar';
-export { Modal } from './Modal';
-export { Skeleton, EventCardSkeleton } from './Skeleton';
+export { default as Button } from "./Button";
+export { default as Card } from "./Card";
+export { default as Input } from "./Input";
+export { default as Modal } from "./Modal";
+export { default as SearchBar } from "./SearchBar";
+export { default as Skeleton } from "./Skeleton";
+// Add other UI components here as you create them

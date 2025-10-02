@@ -1,0 +1,134 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing-function);
+  text-decoration: none; /* For button acting as a link */
+  user-select: none; /* Prevent text selection */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Variants */
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-light);
+  border-color: var(--color-primary);
+}
+.primary:hover:not(.disabled) {
+  background-color: darken(
+    var(--color-primary),
+    10%
+  ); /* Placeholder for CSS preprocessor or manual adjustment */
+  background-color: #0069d9; /* Example darker blue */
+  border-color: #0062cc; /* Example darker blue */
+}
+
+.secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-light);
+  border-color: var(--color-secondary);
+}
+.secondary:hover:not(.disabled) {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.success {
+  background-color: var(--color-success);
+  color: var(--color-light);
+  border-color: var(--color-success);
+}
+.success:hover:not(.disabled) {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.danger {
+  background-color: var(--color-danger);
+  color: var(--color-light);
+  border-color: var(--color-danger);
+}
+.danger:hover:not(.disabled) {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.outline:hover:not(.disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-light);
+}
+
+.text {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: transparent;
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+.text:hover:not(.disabled) {
+  background-color: var(--color-light);
+  color: var(--color-primary);
+}
+body.dark .text {
+  color: var(--color-dark-text);
+}
+body.dark .text:hover:not(.disabled) {
+  background-color: var(--color-dark);
+  color: var(--color-primary);
+}
+
+/* Sizes */
+.sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.lg {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+}
+
+/* Disabled state */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dark mode adjustments */
+body.dark .primary {
+  background-color: var(--color-primary); /* Primary often stays bright */
+  border-color: var(--color-primary);
+  color: var(--color-dark-text);
+}
+body.dark .primary:hover:not(.disabled) {
+  background-color: #0056b3; /* Darker primary */
+  border-color: #0056b3;
+}
+
+body.dark .secondary {
+  background-color: var(--color-dark-card-background);
+  border-color: var(--color-dark-border);
+  color: var(--color-dark-text);
+}
+body.dark .secondary:hover:not(.disabled) {
+  background-color: var(--color-dark);
+}
+
+body.dark .outline {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+body.dark .outline:hover:not(.disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-dark-text);
+}

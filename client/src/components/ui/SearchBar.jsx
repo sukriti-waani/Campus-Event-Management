@@ -1,33 +1,46 @@
-import { Search, X } from 'lucide-react';
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa"; // You'll need to install react-icons
+import styles from "./SearchBar.module.css";
 
-export const SearchBar = ({ value, onChange, placeholder = 'Search...', className = '' }) => {
+// Note: You'll need to install react-icons: `npm install react-icons`
+
+const SearchBar = ({
+  onSearch,
+  placeholder = "Search events...",
+  className = "",
+  ...props
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleInputChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSearch(searchTerm);
+  };
+
   return (
-    <div className={`relative ${className}`}>
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    <form
+      className={`${styles.searchBar} ${className}`}
+      onSubmit={handleSubmit}
+      role="search"
+      {...props}
+    >
       <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        type="search"
         placeholder={placeholder}
-        className="
-          w-full pl-10 pr-10 py-2 rounded-lg
-          border border-gray-300 dark:border-gray-600
-          bg-white dark:bg-gray-800
-          text-gray-900 dark:text-gray-100
-          focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-all duration-200
-        "
+        value={searchTerm}
+        onChange={handleInputChange}
+        className={styles.searchInput}
         aria-label={placeholder}
       />
-      {value && (
-        <button
-          onClick={() => onChange('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          aria-label="Clear search"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      )}
-    </div>
+      <button type="submit" className={styles.searchButton} aria-label="Search">
+        <FaSearch />
+      </button>
+    </form>
   );
 };
+
+export default SearchBar;

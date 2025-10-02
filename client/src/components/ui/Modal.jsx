@@ -1,63 +1,82 @@
-import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { FaTimes } from "react-icons/fa"; // You'll need to install react-icons
+import styles from "./Modal.module.css";
 
-export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+// Note: You'll need to install react-icons: `npm install react-icons`
 
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className = "",
+  ...props
+}) => {
+  const modalRef = useRef(null);
+
+  // Close on Escape key press
+  const handleKeyDown = useCallback(
+    (event) => {
+      if (event.key === "Escape") {
         onClose();
       }
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; // Prevent scrolling behind modal
+      document.addEventListener("keydown", handleKeyDown);
+      // Focus on the modal for accessibility
+      modalRef.current?.focus();
+    } else {
+      document.body.style.overflow = "unset";
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+      document.removeEventListener("keydown", handleKeyDown);
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 
-  const sizes = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-  };
-
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in"
+      className={styles.modalOverlay}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
       <div
-        className={`bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full ${sizes[size]} animate-slide-up`}
-        onClick={(e) => e.stopPropagation()}
+        className={`${styles.modal} ${className}`}
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+        ref={modalRef}
+        tabIndex="-1" // Make it focusable
+        {...props}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 id="modal-title" className="text-xl font-bold text-gray-900 dark:text-white">
-            {title}
-          </h2>
+        <div className={styles.modalHeader}>
+          {title && (
+            <h2 id="modal-title" className={styles.modalTitle}>
+              {title}
+            </h2>
+          )}
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className={styles.closeButton}
             aria-label="Close modal"
           >
-            <X className="h-6 w-6" />
+            <FaTimes />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className={styles.modalContent}>{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body // Portal the modal to the body
   );
 };
+
+export default Modal;

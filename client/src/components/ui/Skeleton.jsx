@@ -1,34 +1,24 @@
-export const Skeleton = ({ className = '', variant = 'rect' }) => {
-  const variants = {
-    rect: 'rounded-lg',
-    circle: 'rounded-full',
-    text: 'rounded h-4',
-  };
+import styles from "./Skeleton.module.css";
+
+const Skeleton = ({
+  width,
+  height,
+  circle = false,
+  className = "",
+  ...props
+}) => {
+  const skeletonClass = `${styles.skeleton} ${styles.skeletonPulse} ${
+    circle ? styles.circle : ""
+  } ${className}`;
 
   return (
     <div
-      className={`
-        bg-gray-200 dark:bg-gray-700 animate-pulse
-        ${variants[variant]} ${className}
-      `}
-      aria-hidden="true"
-    />
+      className={skeletonClass}
+      style={{ width, height }}
+      aria-hidden="true" // Hide from screen readers
+      {...props}
+    ></div>
   );
 };
 
-export const EventCardSkeleton = () => {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-      <Skeleton className="h-48 w-full rounded-none" />
-      <div className="p-6 space-y-4">
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton variant="text" className="w-full" />
-        <Skeleton variant="text" className="w-2/3" />
-        <div className="flex gap-2">
-          <Skeleton className="h-8 w-24" />
-          <Skeleton className="h-8 w-32" />
-        </div>
-      </div>
-    </div>
-  );
-};
+export default Skeleton;
