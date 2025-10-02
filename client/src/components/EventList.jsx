@@ -76,7 +76,7 @@ const mockEvents = [
     description:
       "Witness intense debates on current global issues between different departments.",
     imageUrl:
-      "https://via.placeholder.com.com/300x200/ffc107/ffffff?text=Debate",
+      "https://via.placeholder.com/300x200/ffc107/ffffff?text=Debate",
   },
 ];
 
