@@ -8,11 +8,12 @@ import {
   FaTag,
   FaTrashAlt,
   FaUser,
-} from "react-icons/fa"; // react-icons
+} from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import styles from "./EventDetails.module.css";
+import RegistrationForm from "./RegistrationForm";
 import { Button, Card, Skeleton } from "./ui";
 
 // Re-using mockEvents from EventList for demonstration
@@ -104,7 +105,8 @@ const EventDetails = () => {
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isRegistered, setIsRegistered] = useState(false); // Simulate registration status
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -137,11 +139,12 @@ const EventDetails = () => {
       return;
     }
 
-    // Simulate registration
+    setShowRegistrationForm(true);
+  };
+
+  const handleRegistrationSuccess = () => {
     setIsRegistered(true);
-    showToast(`Successfully registered for ${event.title}!`, "success");
-    // In a real app, you'd update backend and AuthContext's user state
-    // For now, assume a successful backend call.
+    setShowRegistrationForm(false);
   };
 
   const handleUnregister = () => {
@@ -214,96 +217,104 @@ const EventDetails = () => {
   const isEventOrganizer = isOrganizer && user?.id === event.organizer.id; // More robust check needed for real app
 
   return (
-    <div className={`${styles.eventDetailsPage} container`}>
-      <Card className={styles.eventDetailsCard}>
-        <div className={styles.imageContainer}>
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            className={styles.eventImage}
-          />
-        </div>
-        <div className={styles.content}>
-          <h1 className={styles.eventTitle}>{event.title}</h1>
-          <p className={styles.organizerInfo}>
-            <FaUser aria-hidden="true" className={styles.infoIcon} /> Organized
-            by: <strong>{event.organizer.name}</strong>
-          </p>
-
-          <div className={styles.detailsGrid}>
-            <p className={styles.detailItem}>
-              <FaCalendarAlt aria-hidden="true" className={styles.infoIcon} />{" "}
-              Date: <span>{new Date(event.date).toLocaleDateString()}</span>
-            </p>
-            <p className={styles.detailItem}>
-              <FaClock aria-hidden="true" className={styles.infoIcon} /> Time:{" "}
-              <span>{event.time}</span>
-            </p>
-            <p className={styles.detailItem}>
-              <FaMapMarkerAlt aria-hidden="true" className={styles.infoIcon} />{" "}
-              Location: <span>{event.location}</span>
-            </p>
-            <p className={styles.detailItem}>
-              <FaTag aria-hidden="true" className={styles.infoIcon} /> Category:{" "}
-              <span className={styles.categoryTag}>{event.category}</span>
-            </p>
+    <>
+      <div className={`${styles.eventDetailsPage} container`}>
+        <Card className={styles.eventDetailsCard}>
+          <div className={styles.imageContainer}>
+            <img
+              src={event.imageUrl}
+              alt={event.title}
+              className={styles.eventImage}
+            />
           </div>
+          <div className={styles.content}>
+            <h1 className={styles.eventTitle}>{event.title}</h1>
+            <p className={styles.organizerInfo}>
+              <FaUser aria-hidden="true" className={styles.infoIcon} /> Organized
+              by: <strong>{event.organizer.name}</strong>
+            </p>
 
-          <p className={styles.eventDescription}>{event.description}</p>
+            <div className={styles.detailsGrid}>
+              <p className={styles.detailItem}>
+                <FaCalendarAlt aria-hidden="true" className={styles.infoIcon} />{" "}
+                Date: <span>{new Date(event.date).toLocaleDateString()}</span>
+              </p>
+              <p className={styles.detailItem}>
+                <FaClock aria-hidden="true" className={styles.infoIcon} /> Time:{" "}
+                <span>{event.time}</span>
+              </p>
+              <p className={styles.detailItem}>
+                <FaMapMarkerAlt aria-hidden="true" className={styles.infoIcon} />{" "}
+                Location: <span>{event.location}</span>
+              </p>
+              <p className={styles.detailItem}>
+                <FaTag aria-hidden="true" className={styles.infoIcon} /> Category:{" "}
+                <span className={styles.categoryTag}>{event.category}</span>
+              </p>
+            </div>
 
-          <div className={styles.actionButtons}>
-            {isEventOrganizer ? (
-              <>
-                <Button
-                  onClick={handleEdit}
-                  variant="outline"
-                  className={styles.actionButton}
-                >
-                  <FaEdit aria-hidden="true" /> Edit Event
-                </Button>
-                <Button
-                  onClick={handleDelete}
-                  variant="danger"
-                  className={styles.actionButton}
-                >
-                  <FaTrashAlt aria-hidden="true" /> Delete Event
-                </Button>
-              </>
-            ) : (
-              isStudent &&
-              (isRegistered ? (
-                <Button
-                  onClick={handleUnregister}
-                  variant="secondary"
-                  className={styles.actionButton}
-                >
-                  <FaCheckCircle aria-hidden="true" /> Registered (Unregister)
-                </Button>
+            <p className={styles.eventDescription}>{event.description}</p>
+
+            <div className={styles.actionButtons}>
+              {isEventOrganizer ? (
+                <>
+                  <Button
+                    onClick={handleEdit}
+                    variant="outline"
+                    className={styles.actionButton}
+                  >
+                    <FaEdit aria-hidden="true" /> Edit Event
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    variant="danger"
+                    className={styles.actionButton}
+                  >
+                    <FaTrashAlt aria-hidden="true" /> Delete Event
+                  </Button>
+                </>
               ) : (
+                isStudent &&
+                (isRegistered ? (
+                  <Button
+                    onClick={handleUnregister}
+                    variant="secondary"
+                    className={styles.actionButton}
+                  >
+                    <FaCheckCircle aria-hidden="true" /> Registered (Unregister)
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleRegister}
+                    variant="primary"
+                    className={styles.actionButton}
+                  >
+                    Register for Event
+                  </Button>
+                ))
+              )}
+              {!isAuthenticated && (
                 <Button
-                  onClick={handleRegister}
+                  onClick={() =>
+                    navigate("/login", { state: { from: `/events/${id}` } })
+                  }
                   variant="primary"
                   className={styles.actionButton}
                 >
-                  Register for Event
+                  Login to Register
                 </Button>
-              ))
-            )}
-            {!isAuthenticated && (
-              <Button
-                onClick={() =>
-                  navigate("/login", { state: { from: `/events/${id}` } })
-                }
-                variant="primary"
-                className={styles.actionButton}
-              >
-                Login to Register
-              </Button>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </Card>
-    </div>
+        </Card>
+      </div>
+
+      <RegistrationForm
+        isOpen={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+        event={event}
+      />
+    </>
   );
 };
 

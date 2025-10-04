@@ -1,0 +1,125 @@
+.createEventForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+}
+
+body.dark .label {
+  color: var(--color-dark-text);
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: all 0.3s ease;
+}
+
+body.dark .select {
+  background-color: var(--color-dark-card-background);
+  color: var(--color-dark-text);
+  border-color: var(--color-dark-border);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans-serif);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.3s ease;
+}
+
+body.dark .textarea {
+  background-color: var(--color-dark-card-background);
+  color: var(--color-dark-text);
+  border-color: var(--color-dark-border);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.textarea.error {
+  border-color: var(--color-danger);
+}
+
+.errorText {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+body.dark .formActions {
+  border-top-color: var(--color-dark-border);
+}
+
+@media (max-width: 640px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .formActions button {
+    width: 100%;
+  }
+
+  .createEventForm {
+    max-height: 60vh;
+  }
+}
