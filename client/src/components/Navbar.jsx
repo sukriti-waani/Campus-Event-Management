@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { FaBars, FaMoon, FaSun, FaTimes } from "react-icons/fa"; // You'll need react-icons
+import { FaBars, FaTimes } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useTheme } from "../contexts/ThemeContext";
 import styles from "./Navbar.module.css";
 import { Button } from "./ui";
 
 const Navbar = () => {
-  const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -90,17 +88,6 @@ const Navbar = () => {
         </div>
 
         <div className={styles.navActions}>
-          <Button
-            onClick={toggleTheme}
-            variant="text"
-            className={styles.themeToggle}
-            aria-label={`Toggle to ${
-              theme === "light" ? "dark" : "light"
-            } mode`}
-          >
-            {theme === "light" ? <FaMoon /> : <FaSun />}
-          </Button>
-
           {isAuthenticated ? (
             <>
               <span

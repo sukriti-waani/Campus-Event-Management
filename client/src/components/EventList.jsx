@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaTag } from "react-icons/fa"; // react-icons
+import { FaCalendarAlt, FaMapMarkerAlt, FaTag } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Features from "./Features";
+import Hero from "./Hero";
 import styles from "./EventList.module.css";
 import { Button, Card, SearchBar, Skeleton } from "./ui";
 
@@ -137,8 +139,11 @@ const EventList = () => {
   };
 
   return (
-    <div className={`${styles.eventListPage} container`}>
-      <h1 className={styles.pageTitle}>Upcoming Campus Events</h1>
+    <>
+      <Hero />
+      <Features />
+      <div id="events" className={`${styles.eventListPage} container`}>
+        <h2 className={styles.pageTitle}>Upcoming Campus Events</h2>
 
       <div className={styles.controls}>
         <SearchBar onSearch={handleSearch} className={styles.searchBar} />
@@ -233,7 +238,8 @@ const EventList = () => {
           No events found matching your criteria.
         </p>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

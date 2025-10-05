@@ -1,10 +1,11 @@
 import { Suspense, lazy } from "react";
-import { FaSpinner } from "react-icons/fa"; // You'll need to install react-icons
+import { FaSpinner } from "react-icons/fa";
 import { Route, Routes } from "react-router-dom";
 import styles from "./App.module.css";
+import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./contexts/AuthContext"; // Import useAuth to check loading state
+import { useAuth } from "./contexts/AuthContext";
 
 // Lazy-loaded components
 const Login = lazy(() => import("./components/Login"));
@@ -85,6 +86,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      <Footer />
     </div>
   );
 }
