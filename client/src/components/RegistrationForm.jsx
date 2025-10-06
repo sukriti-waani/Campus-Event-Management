@@ -4,7 +4,7 @@ import { useToast } from "../contexts/ToastContext";
 import styles from "./RegistrationForm.module.css";
 import { Button, Input, Modal } from "./ui";
 
-const RegistrationForm = ({ isOpen, onClose, event }) => {
+const RegistrationForm = ({ isOpen, onClose, event, onSuccess }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
 
@@ -90,6 +90,9 @@ const RegistrationForm = ({ isOpen, onClose, event }) => {
         email: user?.email || "",
       });
 
+      if (onSuccess) {
+        onSuccess();
+      }
       onClose();
     } catch (error) {
       showToast("Registration failed. Please try again.", "danger");
