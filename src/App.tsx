@@ -6,7 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import EventDetail from "./pages/EventDetail";
 import OrganizerLogin from "./pages/OrganizerLogin";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
 import CreateEvent from "./pages/CreateEvent";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,7 +23,10 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/organizer/login" element={<OrganizerLogin />} />
+          <Route path="/organizer" element={<OrganizerDashboard />} />
           <Route path="/organizer/create" element={<CreateEvent />} />
+          <Route path="/organizer/edit/:id" element={<CreateEvent />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,10 @@ import Footer from "@/components/Footer";
 import { toast } from "sonner";
 
 const CreateEvent = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEditMode = Boolean(id);
+  
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -21,7 +25,29 @@ const CreateEvent = () => {
     location: "",
     description: "",
     capacity: "",
+    status: "upcoming" as "upcoming" | "ongoing" | "completed",
   });
+
+  // Load event data in edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      // Mock data - replace with API call
+      const mockEvent = {
+        id,
+        title: "Tech Symposium 2024",
+        category: "technology",
+        date: "2024-03-15",
+        time: "10:00",
+        location: "Main Auditorium",
+        description: "Annual technology conference",
+        capacity: "100",
+        status: "upcoming" as const,
+        image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
+      };
+      setFormData(mockEvent);
+      setImagePreviews([mockEvent.image]);
+    }
+  }, [id, isEditMode]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -50,7 +76,8 @@ const CreateEvent = () => {
       toast.error("Please fill in all required fields");
       return;
     }
-    toast.success("Event created successfully!");
+    toast.success(isEditMode ? "Event updated successfully!" : "Event created successfully!");
+    setTimeout(() => navigate("/organizer"), 1500);
   };
 
   return (
@@ -65,8 +92,12 @@ const CreateEvent = () => {
 
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Create New Event</h1>
-            <p className="text-muted-foreground">Fill in the details to create an amazing event</p>
+            <h1 className="text-3xl font-bold mb-2">
+              {isEditMode ? "Edit Event" : "Create New Event"}
+            </h1>
+            <p className="text-muted-foreground">
+              {isEditMode ? "Update your event details" : "Fill in the details to create an amazing event"}
+            </p>
           </div>
 
           <Card>
@@ -165,6 +196,25 @@ const CreateEvent = () => {
                   </div>
                 </div>
 
+                {isEditMode && (
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Event Status *</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="upcoming">Upcoming</SelectItem>
+                        <SelectItem value="ongoing">Ongoing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="date">Date *</Label>
@@ -215,7 +265,7 @@ const CreateEvent = () => {
                     <Link to="/organizer">Cancel</Link>
                   </Button>
                   <Button type="submit" className="flex-1 bg-gradient-primary hover:opacity-90">
-                    Create Event
+                    {isEditMode ? "Update Event" : "Create Event"}
                   </Button>
                 </div>
               </form>
