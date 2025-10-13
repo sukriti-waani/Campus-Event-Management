@@ -1,7 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Calendar, LogIn, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Menu, X, User, LogIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -104,6 +104,12 @@ const Navbar = () => {
       </div>
     </nav>
   );
+};
+
+const logoutHandler = () => {
+  localStorage.removeItem('userInfo');
+  // Optional: Redirect to login or home
+  window.location.href = '/login';
 };
 
 export default Navbar;

@@ -1,7 +1,9 @@
-require("dotenv").config();
+// server.js
+require("dotenv").config(); // ADD THIS LINE AT THE VERY TOP
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const cors = require("cors"); // ADD THIS FOR FRONTEND CONNECTION
 
 const authRoutes = require("./routes/authRoutes");
 const eventRoutes = require("./routes/eventRoutes");
@@ -12,11 +14,13 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json()); // For parsing application/json
+app.use(cors()); // Enable CORS for all origins, you might want to restrict this in production
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve static files from 'uploads' directory
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(process.env.DB_CONNECTION_STRING, {
+    // CORRECTED VARIABLE NAME
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
