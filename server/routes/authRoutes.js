@@ -1,143 +1,95 @@
-// routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const asyncHandler = require("express-async-handler");
-const { protect } = require("../middleware/authMiddleware"); // Using protect to get user data for profile
+const User = require("../models/User"); // Adjust path as needed
 
-// Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-// @desc    Register a new user
-// @route   POST /api/auth/register
+// @route   POST /api/signup
+// @desc    Register a new user (student or organizer)
 // @access  Public
-router.post(
-  "/register",
-  asyncHandler(async (req, res) => {
-    const { username, email, password, role } = req.body;
+router.post("/signup", async (req, res) => {
+  const { username, email, password, role } = req.body;
 
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      res.status(400);
-      throw new Error("User already exists");
+  try {
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: "User already exists" });
     }
 
-    const user = await User.create({
+    // Create new user
+    user = new User({
       username,
       email,
       password,
-      role: role || "student", // Default to 'student' if no role provided
+      role: role || "student", // Default to student if not provided
     });
 
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
-  })
-);
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
-router.post(
-  "/login",
-  asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email });
-
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(401);
-      throw new Error("Invalid email or password");
-    }
-  })
-);
-
-// @desc    Get user profile (protected route)
-// @route   GET /api/auth/profile
-// @access  Private
-router.get(
-  "/profile",
-  protect,
-  asyncHandler(async (req, res) => {
-    const user = req.user; // req.user is set by the protect middleware
-
-    if (user) {
-      res.json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        registeredEvents: user.registeredEvents,
-      });
-    } else {
-      res.status(404);
-      throw new Error("User not found");
-    }
-  })
-);
-
-// @desc    Register a student for an event
-// @route   POST /api/auth/register-event/:id
-// @access  Private (Student Only)
-router.post(
-  "/register-event/:id",
-  protect,
-  asyncHandler(async (req, res) => {
-    const eventId = req.params.id;
-    const userId = req.user._id;
-
-    const user = await User.findById(userId);
-    const event = await Event.findById(eventId); // Assuming Event model is available
-
-    if (!user || !event) {
-      res.status(404);
-      throw new Error("User or Event not found");
-    }
-
-    // Ensure only students can register for events
-    if (user.role !== "student") {
-      res.status(403);
-      throw new Error("Only students can register for events");
-    }
-
-    // Check if already registered
-    if (user.registeredEvents.includes(eventId)) {
-      res.status(400);
-      throw new Error("Already registered for this event");
-    }
-
-    user.registeredEvents.push(eventId);
     await user.save();
 
-    // Optional: Add user to event's attendees list
-    // event.attendees.push(userId);
-    // await event.save();
+    // On successful signup, redirect to login (frontend will handle this with status code)
+    res
+      .status(201)
+      .json({ msg: "User registered successfully. Please log in." });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 
-    res.status(200).json({ message: "Successfully registered for the event!" });
-  })
-);
+// @route   POST /api/login
+// @desc    Authenticate user & get token
+// @access  Public
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user exists
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid Credentials" });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Invalid Credentials" });
+    }
+
+    // Create and return JWT
+    const payload = {
+      user: {
+        id: user.id,
+        role: user.role,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }, // Token expires in 1 hour
+      (err, token) => {
+        if (err) throw err;
+        // On successful login, send token and user info
+        res.json({
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          },
+        });
+      }
+    );
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 
 module.exports = router;

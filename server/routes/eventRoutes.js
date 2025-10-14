@@ -1,130 +1,197 @@
-// routes/eventRoutes.js
 const express = require("express");
 const router = express.Router();
-const Event = require("../models/Event");
-const { protect, authorize } = require("../middleware/authMiddleware");
-const asyncHandler = require("express-async-handler");
-// const upload = require('../utils/upload'); // If you implement file uploads later
+const Event = require("../models/Event"); // Adjust path as needed
+const { authenticateToken, authorizeRole } = require("../middleware/auth"); // Adjust path as needed
+const mongoose = require("mongoose");
 
-// @desc    Get all events
 // @route   GET /api/events
+// @desc    Get all events (publicly accessible)
 // @access  Public
-router.get(
-  "/",
-  asyncHandler(async (req, res) => {
-    const events = await Event.find({}).populate("organizer", "username email"); // Populate organizer info
+router.get("/", async (req, res) => {
+  try {
+    const events = await Event.find().populate("organizer", "username"); // Populate organizer's username
     res.json(events);
-  })
-);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 
-// @desc    Get single event by ID
-// @route   GET /api/events/:id
-// @access  Public
+// @route   GET /api/organizer/events
+// @desc    Get events created by the logged-in organizer, categorized
+// @access  Private (Organizer only)
 router.get(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id).populate(
-      "organizer",
-      "username email"
-    );
+  "/organizer/events",
+  authenticateToken,
+  authorizeRole("organizer"),
+  async (req, res) => {
+    try {
+      const organizerId = req.user.id;
+      const events = await Event.find({ organizer: organizerId }).sort({
+        date: 1,
+      }); // Sort by date
 
-    if (event) {
-      res.json(event);
-    } else {
-      res.status(404);
-      throw new Error("Event not found");
+      const now = new Date();
+      const pastEvents = events.filter((event) => event.date < now);
+      const upcomingEvents = events.filter((event) => event.date >= now);
+      // For 'current' events, you might need a more complex logic, e.g., if event has a start and end time.
+      // For simplicity, I'm classifying based on current date relative to event date.
+      // If an event is 'today', it would fall under upcoming until it's passed.
+
+      res.json({
+        past: pastEvents,
+        upcoming: upcomingEvents,
+        // You can add a 'current' category if you define a more precise window for it
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
     }
-  })
+  }
 );
 
-// @desc    Create an event
 // @route   POST /api/events
-// @access  Private/Organizer
+// @desc    Create a new event
+// @access  Private (Organizer only)
 router.post(
   "/",
-  protect,
-  authorize("organizer"), // Only organizers can create events
-  // upload.single('image'), // If you implement image upload
-  asyncHandler(async (req, res) => {
-    const { title, description, date, location, image } = req.body; // 'image' would come from upload middleware or a URL
+  authenticateToken,
+  authorizeRole("organizer"),
+  async (req, res) => {
+    const { title, description, date, location } = req.body;
 
-    if (!title || !description || !date || !location) {
-      res.status(400);
-      throw new Error("Please enter all required fields");
+    try {
+      const newEvent = new Event({
+        title,
+        description,
+        date,
+        location,
+        organizer: req.user.id, // Assign the logged-in organizer as the event creator
+      });
+
+      const event = await newEvent.save();
+      res.status(201).json(event);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
     }
-
-    const event = new Event({
-      title,
-      description,
-      date,
-      location,
-      organizer: req.user._id, // Organizer is the logged-in user
-      image, // If image path is sent in body or from upload middleware
-    });
-
-    const createdEvent = await event.save();
-    res.status(201).json(createdEvent);
-  })
+  }
 );
 
-// @desc    Update an event
 // @route   PUT /api/events/:id
-// @access  Private/Organizer
+// @desc    Update an event
+// @access  Private (Organizer only, and only for their own events)
 router.put(
   "/:id",
-  protect,
-  authorize("organizer"),
-  asyncHandler(async (req, res) => {
-    const { title, description, date, location, image } = req.body;
+  authenticateToken,
+  authorizeRole("organizer"),
+  async (req, res) => {
+    const { title, description, date, location } = req.body;
 
-    const event = await Event.findById(req.params.id);
+    try {
+      let event = await Event.findById(req.params.id);
 
-    if (event) {
-      // Ensure the logged-in organizer is the owner of the event
-      if (event.organizer.toString() !== req.user._id.toString()) {
-        res.status(403);
-        throw new Error("Not authorized to update this event");
+      if (!event) {
+        return res.status(404).json({ msg: "Event not found" });
+      }
+
+      // Ensure organizer can only update their own events
+      if (event.organizer.toString() !== req.user.id) {
+        return res
+          .status(401)
+          .json({ msg: "Not authorized to update this event" });
       }
 
       event.title = title || event.title;
       event.description = description || event.description;
       event.date = date || event.date;
       event.location = location || event.location;
-      event.image = image || event.image; // Update image if provided
 
-      const updatedEvent = await event.save();
-      res.json(updatedEvent);
-    } else {
-      res.status(404);
-      throw new Error("Event not found");
+      await event.save();
+      res.json(event);
+    } catch (err) {
+      console.error(err.message);
+      // Check for invalid ObjectId format
+      if (err.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Event not found" });
+      }
+      res.status(500).send("Server Error");
     }
-  })
+  }
 );
 
-// @desc    Delete an event
 // @route   DELETE /api/events/:id
-// @access  Private/Organizer
+// @desc    Delete an event
+// @access  Private (Organizer only, and only for their own events)
 router.delete(
   "/:id",
-  protect,
-  authorize("organizer"),
-  asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id);
+  authenticateToken,
+  authorizeRole("organizer"),
+  async (req, res) => {
+    try {
+      let event = await Event.findById(req.params.id);
 
-    if (event) {
-      // Ensure the logged-in organizer is the owner of the event
-      if (event.organizer.toString() !== req.user._id.toString()) {
-        res.status(403);
-        throw new Error("Not authorized to delete this event");
+      if (!event) {
+        return res.status(404).json({ msg: "Event not found" });
       }
 
-      await event.deleteOne(); // Use deleteOne() or remove()
-      res.json({ message: "Event removed" });
-    } else {
-      res.status(404);
-      throw new Error("Event not found");
+      // Ensure organizer can only delete their own events
+      if (event.organizer.toString() !== req.user.id) {
+        return res
+          .status(401)
+          .json({ msg: "Not authorized to delete this event" });
+      }
+
+      await Event.deleteOne({ _id: req.params.id }); // Use deleteOne with query
+      res.json({ msg: "Event removed" });
+    } catch (err) {
+      console.error(err.message);
+      // Check for invalid ObjectId format
+      if (err.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Event not found" });
+      }
+      res.status(500).send("Server Error");
     }
-  })
+  }
+);
+
+// @route   POST /api/events/:id/register
+// @desc    Register a student for an event
+// @access  Private (Student only)
+router.post(
+  "/:id/register",
+  authenticateToken,
+  authorizeRole("student"),
+  async (req, res) => {
+    try {
+      const eventId = req.params.id;
+      const studentId = req.user.id;
+
+      const event = await Event.findById(eventId);
+
+      if (!event) {
+        return res.status(404).json({ msg: "Event not found" });
+      }
+
+      // Check if student is already registered
+      if (event.attendees.includes(studentId)) {
+        return res
+          .status(400)
+          .json({ msg: "Already registered for this event" });
+      }
+
+      event.attendees.push(studentId);
+      await event.save();
+      res.json({ msg: "Successfully registered for the event" });
+    } catch (err) {
+      console.error(err.message);
+      // Check for invalid ObjectId format
+      if (err.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Event not found" });
+      }
+      res.status(500).send("Server Error");
+    }
+  }
 );
 
 module.exports = router;

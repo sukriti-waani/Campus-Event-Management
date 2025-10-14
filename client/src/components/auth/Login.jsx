@@ -1,33 +1,33 @@
-// src/components/Auth/Login.js (Example snippet, adapt to your actual file)
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../api"; // Your API client
+import { useAuth } from "../../context/AuthContext"; // Import useAuth hook
+import AuthService from "../../services/AuthService"; // Adjust path as needed
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use the login function from AuthContext
 
-  const submitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setMessage("");
     try {
-      const { data } = await API.post("/auth/login", { email, password });
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      navigate("/"); // Redirect to home or dashboard
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      const data = await AuthService.login(email, password);
+      login(data.user, data.token); // Store user data and token in context and localStorage
+      // navigate('/') is handled by AuthContext's login function
+    } catch (error) {
+      setMessage(error.message);
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={submitHandler}>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label>Email</label>
+          <label>Email:</label>
           <input
             type="email"
             value={email}
@@ -36,7 +36,7 @@ function Login() {
           />
         </div>
         <div>
-          <label>Password</label>
+          <label>Password:</label>
           <input
             type="password"
             value={password}
@@ -46,6 +46,7 @@ function Login() {
         </div>
         <button type="submit">Login</button>
       </form>
+      {message && <p>{message}</p>}
     </div>
   );
 }
