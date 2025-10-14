@@ -1,3 +1,4 @@
+// frontend/src/pages/Home.tsx
 import React, { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
 import { useAuth } from "../context/AuthContext";
@@ -8,15 +9,15 @@ interface Event {
   description: string;
   date: string;
   location: string;
-  category: string;
-  image: string;
-  attendees: number;
+  category?: string;
+  image?: string;
+  attendees?: number;
   organizer?: { username: string };
 }
 
 const Home: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<string>("");
   const { isAuthenticated, isStudent } = useAuth();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const Home: React.FC = () => {
       await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // if using cookies for auth
+        credentials: "include",
       });
       setMessage("Successfully registered for the event!");
       fetchEvents();

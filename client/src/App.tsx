@@ -12,14 +12,12 @@ import About from "./pages/About";
 import CreateEvent from "./pages/CreateEvent";
 import EventDetail from "./pages/EventDetail";
 import Home from "./pages/HomePage";
-import NotFound from "./pages/NotFound";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import OrganizerLogin from "./pages/OrganizerLogin";
 
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
-import ProtectedRoute from "./components/ProtectedRoute.jsx"; // ✅ Corrected
-
+import ProtectedRoute from "./components/ProtectedRoute"; // Already JSX/TS compatible
 import { AuthProvider } from "./context/AuthContext";
 
 // Initialize React Query client
@@ -33,35 +31,48 @@ const App: React.FC = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Navbar />
-            <div className="container mx-auto px-4 py-6">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/event/:id" element={<EventDetail />} />
-                <Route path="/organizer/login" element={<OrganizerLogin />} />
+            <div className="min-h-screen bg-gray-50 font-inter antialiased">
+              <Navbar />
+              <main className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/event/:id" element={<EventDetail />} />
+                  <Route path="/organizer/login" element={<OrganizerLogin />} />
 
-                {/* Protected Routes for Organizer */}
-                <Route element={<ProtectedRoute allowedRoles={["organizer"]} />}>
-                  <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
-                  <Route path="/organizer/create" element={<CreateEvent />} />
-                  <Route path="/organizer/edit/:id" element={<CreateEvent />} />
-                </Route>
+                  {/* Protected Routes for Organizer */}
+                  <Route element={<ProtectedRoute allowedRoles={["organizer"]} />}>
+                    <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
+                    <Route path="/organizer/create" element={<CreateEvent />} />
+                    <Route path="/organizer/edit/:id" element={<CreateEvent />} />
+                  </Route>
 
-                {/* Protected Routes for Student */}
-                <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+                  {/* Protected Routes for Student */}
+                  <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+                    <Route
+                      path="/my-registrations"
+                      element={
+                        <div className="text-center p-8 text-xl font-semibold">
+                          My Student Registrations Page (Coming Soon!)
+                        </div>
+                      }
+                    />
+                  </Route>
+
+                  {/* Catch-all */}
                   <Route
-                    path="/my-registrations"
-                    element={<div>My Student Registrations Page (TODO)</div>}
+                    path="*"
+                    element={
+                      <div className="text-center p-16 text-2xl font-bold text-red-600">
+                        404 - Page Not Found
+                      </div>
+                    }
                   />
-                </Route>
-
-                {/* Catch-all */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                </Routes>
+              </main>
             </div>
           </AuthProvider>
         </BrowserRouter>

@@ -1,18 +1,18 @@
+// frontend/src/components/Navbar.tsx
 import { Button } from "@/components/ui/button";
 import { Calendar, LogIn, LogOut, Menu, User, X } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Import authentication context
+import { useAuth } from "../context/AuthContext";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-
   const { isAuthenticated, isStudent, isOrganizer, user, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    navigate("/login"); // Redirect to login page after logout
+    navigate("/login"); // Redirect after logout
   };
 
   return (
@@ -41,11 +41,10 @@ const Navbar = () => {
               Events
             </Link>
 
-            {/* Only visible to organizers */}
             {isOrganizer && (
               <>
                 <Link
-                  to="/organizer"
+                  to="/organizer/dashboard"
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 >
                   Dashboard
@@ -66,7 +65,6 @@ const Navbar = () => {
               About
             </Link>
 
-            {/* Only visible to students */}
             {isStudent && (
               <Link
                 to="/my-registrations"
@@ -141,7 +139,7 @@ const Navbar = () => {
               {isOrganizer && (
                 <>
                   <Link
-                    to="/organizer"
+                    to="/organizer/dashboard"
                     className="px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
