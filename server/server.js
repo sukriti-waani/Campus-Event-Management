@@ -1,48 +1,52 @@
-// Load environment variables at the very top
 require("dotenv").config();
-
-// Import required modules
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path");
 const cors = require("cors");
+const path = require("path");
 
-// Import routes and middleware
 const authRoutes = require("./routes/authRoutes");
 const eventRoutes = require("./routes/eventRoutes");
-const errorHandler = require("./middleware/errorHandler");
 
-// Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(express.json()); // Parse JSON request bodies
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve static files from 'uploads' directory
-
+// --------------------
 // Connect to MongoDB
+// --------------------
 mongoose
-  .connect(process.env.DB_CONNECTION_STRING, {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("MongoDB connected successfully"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => console.log("MongoDB Connected..."))
+  .catch((err) => console.error(err));
 
-// Routes
-app.use("/api/auth", authRoutes); // Authentication routes
-app.use("/api/events", eventRoutes); // Event routes
+// --------------------
+// Middleware
+// --------------------
+app.use(cors());
+app.use(express.json()); // Body parser
 
-// Centralized error handler
-app.use(errorHandler);
+// --------------------
+// API Routes
+// --------------------
+// Mount auth routes at /api/auth
+app.use("/api/auth", authRoutes);
 
-// Basic test route
-app.get("/", (req, res) => {
-  res.send("Campus Event Management Backend is running!");
+// Mount event routes at /api/events
+app.use("/api/events", eventRoutes);
+
+// --------------------
+// Serve frontend (static files)
+// --------------------
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Catch-all route to serve index.html for SPA routing
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/dist", "index.html"));
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// --------------------
+// Start Server
+// --------------------
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

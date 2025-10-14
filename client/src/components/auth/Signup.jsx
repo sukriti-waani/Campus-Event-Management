@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService"; // Adjust path as needed
 
-const Signup = () => {
+function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,67 +16,56 @@ const Signup = () => {
     try {
       const data = await AuthService.signup(username, email, password, role);
       setMessage(data.msg); // "User registered successfully..."
-      navigate("/login"); // Redirect after signup
+      // Redirect to login page after successful signup
+      navigate("/login");
     } catch (error) {
-      setMessage(error.message || "Signup failed");
+      setMessage(error.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Signup</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div>
+      <h2>Signup</h2>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label className="block mb-1">Username:</label>
+          <label>Username:</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="w-full border px-3 py-2 rounded"
           />
         </div>
         <div>
-          <label className="block mb-1">Email:</label>
+          <label>Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border px-3 py-2 rounded"
           />
         </div>
         <div>
-          <label className="block mb-1">Password:</label>
+          <label>Password:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border px-3 py-2 rounded"
           />
         </div>
         <div>
-          <label className="block mb-1">Role:</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          >
+          <label>Role:</label>
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="student">Student</option>
             <option value="organizer">Organizer</option>
           </select>
         </div>
-        <button
-          type="submit"
-          className="w-full bg-gradient-primary text-white py-2 px-4 rounded hover:opacity-90 transition-opacity"
-        >
-          Signup
-        </button>
+        <button type="submit">Signup</button>
       </form>
-      {message && <p className="mt-4 text-red-500">{message}</p>}
+      {message && <p>{message}</p>}
     </div>
   );
-};
+}
 
 export default Signup;

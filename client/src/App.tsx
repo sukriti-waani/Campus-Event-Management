@@ -1,3 +1,4 @@
+// frontend/src/App.tsx
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -17,7 +18,7 @@ import OrganizerLogin from "./pages/OrganizerLogin";
 
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute.jsx"; // ✅ Corrected
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -33,33 +34,35 @@ const App: React.FC = () => {
         <BrowserRouter>
           <AuthProvider>
             <Navbar />
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/event/:id" element={<EventDetail />} />
-              <Route path="/organizer/login" element={<OrganizerLogin />} />
+            <div className="container mx-auto px-4 py-6">
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/event/:id" element={<EventDetail />} />
+                <Route path="/organizer/login" element={<OrganizerLogin />} />
 
-              {/* Protected Routes for Organizer */}
-              <Route element={<ProtectedRoute allowedRoles={["organizer"]} />}>
-                <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
-                <Route path="/organizer/create" element={<CreateEvent />} />
-                <Route path="/organizer/edit/:id" element={<CreateEvent />} />
-              </Route>
+                {/* Protected Routes for Organizer */}
+                <Route element={<ProtectedRoute allowedRoles={["organizer"]} />}>
+                  <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
+                  <Route path="/organizer/create" element={<CreateEvent />} />
+                  <Route path="/organizer/edit/:id" element={<CreateEvent />} />
+                </Route>
 
-              {/* Protected Routes for Student */}
-              <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
-                <Route
-                  path="/my-registrations"
-                  element={<div>My Student Registrations Page (TODO)</div>}
-                />
-              </Route>
+                {/* Protected Routes for Student */}
+                <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+                  <Route
+                    path="/my-registrations"
+                    element={<div>My Student Registrations Page (TODO)</div>}
+                  />
+                </Route>
 
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                {/* Catch-all */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
