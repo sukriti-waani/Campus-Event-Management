@@ -3,6 +3,7 @@ const router = express.Router();
 const Event = require("../models/Event"); // Adjust path as needed
 const { authenticateToken, authorizeRole } = require("../middleware/auth"); // Adjust path as needed
 const mongoose = require("mongoose");
+const eventController = require("../controllers/eventController");
 
 // @route   GET /api/events
 // @desc    Get all events (publicly accessible)
@@ -193,5 +194,9 @@ router.post(
     }
   }
 );
+
+router.get("/upcoming", eventController.getUpcomingEvents); // <--- THIS IS WHAT YOU NEED
+// And/or:
+router.get("/", eventController.getAllEvents);
 
 module.exports = router;

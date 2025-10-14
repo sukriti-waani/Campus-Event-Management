@@ -1,61 +1,93 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const eventController = require("../controllers/eventController");
+const { authenticateToken, authorizeRole } = require("../middleware/auth"); // Adjust path as needed
 
-// Signup
-router.post("/signup", async (req, res) => {
-  const { username, email, password, role } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ msg: "User already exists" });
+// =========================
+// Public Routes
+// =========================
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+// @route   GET /api/events
+// @desc    Get all events (public, sorted by date)
+// @access  Public
+router.get("/", eventController.getAllEvents);
 
-    user = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-      role: role || "student",
-    });
+// @route   GET /api/events/upcoming
+// @desc    Get upcoming events only
+// @access  Public
+router.get("/upcoming", eventController.getUpcomingEvents);
 
-    return res.status(201).json({ msg: "User registered successfully" });
-  } catch (err) {
-    console.error(err.message);
-    return res.status(500).json({ msg: "Server error" });
-  }
-});
+// @route   GET /api/events/:id
+// @desc    Get single event by ID
+// @access  Public
+router.get("/:id", eventController.getEventById);
 
-// Login
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+// =========================
+// Organizer Routes
+// =========================
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+// @route   GET /api/events/organizer/my-events
+// @desc    Get events created by the logged-in organizer, categorized
+// @access  Private (Organizer only)
+router.get(
+  "/organizer/my-events", // Changed to be more explicit and avoid conflict with /api/events/:id
+  authenticateToken,
+  authorizeRole("organizer"),
+  eventController.getOrganizerEvents
+);
 
-    const payload = { id: user._id, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+// @route   POST /api/events
+// @desc    Create a new event
+// @access  Private (Organizer only)
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRole("organizer"),
+  eventController.createEvent
+);
 
-    return res.json({
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (err) {
-    console.error(err.message);
-    return res.status(500).json({ msg: "Server error" });
-  }
-});
+// @route   PUT /api/events/:id
+// @desc    Update an event
+// @access  Private (Organizer only, own events)
+router.put(
+  "/:id",
+  authenticateToken,
+  authorizeRole("organizer"),
+  eventController.updateEvent
+);
+
+// @route   DELETE /api/events/:id
+// @desc    Delete an event
+// @access  Private (Organizer only, own events)
+router.delete(
+  "/:id",
+  authenticateToken,
+  authorizeRole("organizer"),
+  eventController.deleteEvent
+);
+
+// =========================
+// Student Routes
+// =========================
+
+// @route   POST /api/events/:id/register
+// @desc    Register a student for an event
+// @access  Private (Student only)
+router.post(
+  "/:id/register",
+  authenticateToken,
+  authorizeRole("student"),
+  eventController.registerForEvent
+);
+
+// @route   POST /api/events/:id/unregister
+// @desc    Unregister a student from an event
+// @access  Private (Student only)
+router.post(
+  "/:id/unregister",
+  authenticateToken,
+  authorizeRole("student"),
+  eventController.unregisterFromEvent
+);
 
 module.exports = router;
